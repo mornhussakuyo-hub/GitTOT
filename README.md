@@ -1,45 +1,43 @@
-
 # GitTOT
 
-一个简单的 Python 小工具，用来统计 Git 仓库中各个小时的代码增加/删除行数，并在终端输出分布图。
+按小时统计 Git 代码增删，并在终端输出图表。
 
-## 功能
+## 依赖
 
-- 读取当前 Git 仓库的提交记录
-- 统计每个小时的代码增加行数与删除行数
-- 在终端显示左右分布图
-  - 左侧表示删除
-  - 右侧表示增加
+- Python 3.10+
+- Git
 
-## 使用方法
-
-### 1. 进入 Git 仓库目录
+## 安装
 
 ```bash
-cd 你的项目目录
-````
-
-### 2. 运行脚本
-
-```bash
-python gittot.py
+pip install -e .
 ```
 
-## 输出说明
+## 用法
 
-程序会按 `00:00` 到 `23:00` 统计代码改动情况。
+统计当前本地仓库：
 
-示意：
+```bash
+gittot
+```
 
-* 左边条形：删除行数 `-`
-* 中间竖线：0 轴
-* 右边条形：增加行数 `+`
+在 Git 仓库目录里运行。
 
-同时会显示总增加行数和总删除行数。
+统计远程 GitHub 仓库：
 
-## 运行要求
+```bash
+gittot --repo https://github.com/OWNER/REPO --token YOUR_GITHUB_TOKEN
+```
 
-* Python 3
-* Git
-* 当前目录必须是一个 Git 仓库
+限制远程提交数：
+
+```bash
+gittot --repo https://github.com/OWNER/REPO --token YOUR_GITHUB_TOKEN --max-commits 500
+```
+
+## 输出
+
+- `00:00` 到 `23:00`
+- 左侧是删除
+- 右侧是增加
 

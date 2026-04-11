@@ -4,7 +4,7 @@ import sys
 from gittot.stats import group_by_hour
 from gittot.render import render_chart
 from gittot.sources.local_git import get_local_commits
-#from gittot.sources.github_api import get_github_commits
+from gittot.sources.github_api import get_github_commits
 
 def build_parser():
     parser=argparse.ArgumentParser(
@@ -45,13 +45,13 @@ def main():
             commits=get_local_commits()
         
         if not commits:
-            print("没有获取到任何 commit 数据。")
+            print("No commit data was retrieved.")
             sys.exit(1)
         
         hour_stats=group_by_hour(commits)
         render_chart(hour_stats)
     except Exception as e:
-        print(f"错误: {e}")
+        print(f"Error: {e}")
         sys.exit(1)
 
     

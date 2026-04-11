@@ -17,7 +17,7 @@ def run_git_log():
     )
 
     if result.returncode != 0:
-        raise RuntimeError("运行 git log 失败，请确认当前目录是一个 git 仓库。")
+        raise RuntimeError("Failed to run git log. Please make sure the current directory is a Git repository.")
 
     return result.stdout
 
