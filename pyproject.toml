@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gittot"
+version = "0.1.0"
+description = "Analyze code additions and deletions by hour"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31.0"
+]
+
+[project.scripts]
+gittot = "gittot.cli:main"
+
+[tool.setuptools]
+packages = ["gittot", "gittot.sources"]
