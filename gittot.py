@@ -80,12 +80,12 @@ def parse_git_log(output: str):
 
     return commits
 
-def group_by_hour(commmits):
+def group_by_hour(commits):
 
     hour_stats={h:{"add":0,"del":0}for h in range(24)}
 
     for commit in commits:
-        dt=datetime.fromtimestap(commit["timestamp"])
+        dt=datetime.fromtimestamp(commit["timestamp"])
         hour=dt.hour
         hour_stats[hour]["add"] += commit["add"]
         hour_stats[hour]["del"] += commit["del"]
@@ -106,7 +106,7 @@ def render_chart(hour_stats, max_bar_width=25):
         max_value = 1
 
     print("=" * 70)
-    print(f"📊 代码增删时间段分布统计（总增加 +{total_add} 行，总删除 -{total_del} 行）")
+    print(f"代码增删时间段分布统计（总增加 +{total_add} 行，总删除 -{total_del} 行）")
     print("注：时间已自动转换为你当前机器所在的本地时区")
     print("图例：左侧为删除(-)，中间为0轴，右侧为增加(+)")
     print()
