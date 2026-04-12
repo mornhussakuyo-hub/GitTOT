@@ -1,6 +1,8 @@
 import argparse
 import sys
+import os
 
+from gittot.config import bind_token,get_bound_token,unbind_token
 from gittot.stats import group_by_hour
 from gittot.render import render_chart
 from gittot.sources.local_git import get_local_commits
@@ -28,6 +30,21 @@ def build_parser():
         help="Maximum number of commits to fetch from remote repository"
     )
 
+    parser.add_argument(
+        "--bind",
+        help="Bind and save GitHub token locally, then exit"
+    )
+    parser.add_argument(
+        "--unbind",
+        action="store_true",
+        help="Remove the locally saved GitHub token, then exit"
+    )
+    parser.add_argument(
+        "--show-bind",
+        action="store_true",
+        help="Show whether a local GitHub token is currently bound"
+    )
+
     return parser
 
 def main():
@@ -35,10 +52,31 @@ def main():
     args=parser.parse_args()
 
     try:
+        if args.bind:
+            bind_token(args.bind)
+            print("GitHub token has been saved locally.")
+            return
+        if args.unbind:
+            removed = unbind_token()
+            if removed:
+                print("Local GitHub token has been removed.")
+            else:
+                print("No local GitHub token was bound.")
+            return
+        if args.show_bind:
+            token = get_bound_token()
+            if token:
+                print("A local GitHub token is currently bound.")
+            else:
+                print("No local GitHub token is currently bound.")
+            return
+        
+        effective_token = args.token or get_bound_token() or os.environ.get("GITHUB_TOKEN")
+
         if args.repo:
             commits=get_github_commits(
                 repo_url=args.repo,
-                token=args.token,
+                token=effective_token,
                 max_commits=args.max_commits,
             )
         else:
