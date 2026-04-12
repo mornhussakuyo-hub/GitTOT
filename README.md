@@ -9,8 +9,26 @@
 
 ## 安装
 
+将仓库克隆到本地：
+
+```bash
+git clone https://github.com/mornhussakuyo-hub/GitTOT.git
+cd GitTOT
+```
+
+切换到仓库根目录后，执行以下命令安装：
+
+在 `Python` 环境中安装：
+
 ```bash
 pip install -e .
+```
+
+使用 `pipx` 安装：
+
+```bash
+pipx install . 
+pipx ensurepath
 ```
 
 ## 用法
