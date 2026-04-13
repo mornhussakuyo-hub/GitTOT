@@ -1,4 +1,8 @@
 def render_chart(hour_stats, max_bar_width=25):
+    # ANSI color codes
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    RESET = '\033[0m'
 
     total_add = sum(v["add"] for v in hour_stats.values())
     total_del = sum(v["del"] for v in hour_stats.values())
@@ -27,8 +31,8 @@ def render_chart(hour_stats, max_bar_width=25):
         add_len = int(add_val / max_value * max_bar_width)
         del_len = int(del_val / max_value * max_bar_width)
 
-        left = " " * (max_bar_width - del_len) + "█" * del_len
-        right = "█" * add_len + " " * (max_bar_width - add_len)
+        left = " " * (max_bar_width - del_len) + RED + "█" * del_len + RESET
+        right = GREEN + "█" * add_len + RESET + " " * (max_bar_width - add_len)
 
         print(f"{hour:02d}:00 |{left}│{right}| -{del_val} / +{add_val}")
 
