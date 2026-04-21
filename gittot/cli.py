@@ -1,17 +1,18 @@
 import argparse
-import sys
 import os
+import sys
 
 from gittot.config import bind_token,get_bound_token,unbind_token
-from gittot.stats import group_by_hour
-from gittot.render import render_chart
+from gittot.render import render_output
+from gittot.stats import GROUP_BY_CHOICES, group_commits
 from gittot.sources.local_git import get_local_commits
 from gittot.sources.github_api import get_github_commits
+from gittot.time_filters import normalize_time_filters
 
 def build_parser():
     parser=argparse.ArgumentParser(
         prog="gittot",
-        description="Analyze git code additions and deletions by hour."
+        description="Analyze git code additions and deletions across multiple time buckets."
     )
 
     parser.add_argument(
@@ -28,6 +29,34 @@ def build_parser():
         type=int,
         default=None,
         help="Maximum number of commits to fetch from remote repository"
+    )
+    parser.add_argument(
+        "--since",
+        help="Only include commits on or after this date/time"
+    )
+    parser.add_argument(
+        "--until",
+        help="Only include commits on or before this date/time"
+    )
+    parser.add_argument(
+        "--author",
+        help="Only include commits by an author name or email"
+    )
+    parser.add_argument(
+        "--branch",
+        help="Only include commits reachable from this branch"
+    )
+    parser.add_argument(
+        "--by",
+        choices=GROUP_BY_CHOICES,
+        default="hour",
+        help="Group results by hour, weekday, date, or month"
+    )
+    parser.add_argument(
+        "--format",
+        choices=("chart", "json", "csv"),
+        default="chart",
+        help="Render output as a terminal chart, JSON, or CSV"
     )
 
     parser.add_argument(
@@ -72,22 +101,32 @@ def main():
             return
         
         effective_token = args.token or get_bound_token() or os.environ.get("GITHUB_TOKEN")
+        since, until = normalize_time_filters(args.since, args.until)
 
         if args.repo:
             commits=get_github_commits(
                 repo_url=args.repo,
                 token=effective_token,
                 max_commits=args.max_commits,
+                since=since,
+                until=until,
+                author=args.author,
+                branch=args.branch,
             )
         else:
-            commits=get_local_commits()
+            commits=get_local_commits(
+                since=since,
+                until=until,
+                author=args.author,
+                branch=args.branch,
+            )
         
         if not commits:
             print("No commit data was retrieved.")
             sys.exit(1)
         
-        hour_stats=group_by_hour(commits)
-        render_chart(hour_stats)
+        grouped_commits=group_commits(commits, group_by=args.by)
+        render_output(grouped_commits, group_by=args.by, output_format=args.format)
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

@@ -1,12 +1,21 @@
 import subprocess
 
-def run_git_log():
+def run_git_log(since=None, until=None, author=None, branch=None):
     cmd = [
         "git",
         "log",
         "--numstat",
         "--pretty=format:COMMIT|%H|%ct"
     ]
+
+    if since:
+        cmd.append(f"--since={since}")
+    if until:
+        cmd.append(f"--until={until}")
+    if author:
+        cmd.append(f"--author={author}")
+    if branch:
+        cmd.append(branch)
 
     result = subprocess.run(
         cmd,
@@ -64,6 +73,11 @@ def parse_git_log(output: str):
     return commits
 
 
-def get_local_commits():
-    output = run_git_log()
+def get_local_commits(since=None, until=None, author=None, branch=None):
+    output = run_git_log(
+        since=since,
+        until=until,
+        author=author,
+        branch=branch,
+    )
     return parse_git_log(output)

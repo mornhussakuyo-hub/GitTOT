@@ -32,17 +32,30 @@ def build_headers(token=None):
     return headers
 
 
-def list_commit_shas(owner, repo, token=None, max_commits=None):
+def list_commit_shas(owner, repo, token=None, max_commits=None, since=None, until=None, author=None, branch=None):
     headers = build_headers(token)
     page = 1
     per_page = 100
     result = []
     while True:
         url = f"https://api.github.com/repos/{owner}/{repo}/commits"
+        params = {
+            "per_page": per_page,
+            "page": page,
+        }
+        if since:
+            params["since"] = since
+        if until:
+            params["until"] = until
+        if author:
+            params["author"] = author
+        if branch:
+            params["sha"] = branch
+
         resp = requests.get(
             url,
             headers=headers,
-            params={"per_page": per_page, "page": page},
+            params=params,
             timeout=30,
         )
         if resp.status_code == 401:
@@ -101,7 +114,7 @@ def fetch_commit_detail(owner, repo, sha, token=None):
     }
 
 
-def get_github_commits(repo_url, token=None, max_commits=None):
+def get_github_commits(repo_url, token=None, max_commits=None, since=None, until=None, author=None, branch=None):
     owner, repo = parse_github_repo_url(repo_url)
 
     shas = list_commit_shas(
@@ -109,6 +122,10 @@ def get_github_commits(repo_url, token=None, max_commits=None):
         repo=repo,
         token=token,
         max_commits=max_commits,
+        since=since,
+        until=until,
+        author=author,
+        branch=branch,
     )
 
     commits = []
